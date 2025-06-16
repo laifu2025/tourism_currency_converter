@@ -94,4 +94,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get offlineDataUpdatedLabel => '离线数据, 更新于: ';
+
+  @override
+  String get errorFetchFailed => '汇率加载失败，请检查网络后重试。';
+
+  @override
+  String get retry => '重试';
 }

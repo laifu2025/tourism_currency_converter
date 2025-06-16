@@ -95,4 +95,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get offlineDataUpdatedLabel => 'Offline data, updated: ';
+
+  @override
+  String get errorFetchFailed =>
+      'Failed to load rates. Please check your network and try again.';
+
+  @override
+  String get retry => 'Retry';
 }

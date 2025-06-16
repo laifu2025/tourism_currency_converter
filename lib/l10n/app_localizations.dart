@@ -271,6 +271,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Offline data, updated: '**
   String get offlineDataUpdatedLabel;
+
+  /// No description provided for @errorFetchFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load rates. Please check your network and try again.'**
+  String get errorFetchFailed;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
 }
 
 class _AppLocalizationsDelegate

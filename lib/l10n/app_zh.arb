@@ -28,5 +28,7 @@
   "unstar": "取消收藏",
   "star": "收藏",
   "lastUpdatedLabel": "更新于: ",
-  "offlineDataUpdatedLabel": "离线数据, 更新于: "
+  "offlineDataUpdatedLabel": "离线数据, 更新于: ",
+  "errorFetchFailed": "汇率加载失败，请检查网络后重试。",
+  "retry": "重试"
 } 

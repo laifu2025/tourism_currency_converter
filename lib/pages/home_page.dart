@@ -88,7 +88,7 @@ class _HomePageState extends State<HomePage> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          errorMessage = e.toString().replaceFirst("Exception: ", "");
+          errorMessage = 'FETCH_FAILED';
         });
       }
     } finally {
@@ -221,6 +221,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildErrorPanel(String error) {
+    final s = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -230,14 +231,14 @@ class _HomePageState extends State<HomePage> {
             const Icon(Icons.error_outline, color: Colors.red, size: 48),
             const SizedBox(height: 16),
             Text(
-              error,
+              s.errorFetchFailed,
               textAlign: TextAlign.center,
               style: const TextStyle(color: Colors.red),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: fetchRates,
-              child: const Text('Retry'),
+              child: Text(s.retry),
             )
           ],
         ),

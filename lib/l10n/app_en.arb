@@ -28,5 +28,7 @@
   "unstar": "Remove from favorites",
   "star": "Add to favorites",
   "lastUpdatedLabel": "Last updated: ",
-  "offlineDataUpdatedLabel": "Offline data, updated: "
+  "offlineDataUpdatedLabel": "Offline data, updated: ",
+  "errorFetchFailed": "Failed to load rates. Please check your network and try again.",
+  "retry": "Retry"
 } 
