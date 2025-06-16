@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tourism_currency_converter/generated/app_localizations.dart';
+import 'package:provider/provider.dart';
+import 'package:tourism_currency_converter/l10n/app_localizations.dart';
+import '../data/providers/favorites_provider.dart';
 
 class CurrenciesPage extends StatefulWidget {
-  const CurrenciesPage({Key? key}) : super(key: key);
+  final bool isForSelection;
+  const CurrenciesPage({Key? key, this.isForSelection = false}) : super(key: key);
 
   @override
   State<CurrenciesPage> createState() => _CurrenciesPageState();
@@ -16,7 +18,6 @@ class _CurrenciesPageState extends State<CurrenciesPage> {
   bool isLoading = true;
   String? error;
   String search = '';
-  Set<String> starred = {};
 
   // 常见货币代码与国旗代码映射
   static const Map<String, String> currencyFlagMap = {
@@ -98,27 +99,7 @@ class _CurrenciesPageState extends State<CurrenciesPage> {
   @override
   void initState() {
     super.initState();
-    loadStarred();
     fetchCurrencies();
-  }
-
-  Future<void> loadStarred() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      starred = prefs.getStringList('starred_currencies')?.toSet() ?? {};
-    });
-  }
-
-  Future<void> toggleStar(String code) async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      if (starred.contains(code)) {
-        starred.remove(code);
-      } else {
-        starred.add(code);
-      }
-      prefs.setStringList('starred_currencies', starred.toList());
-    });
   }
 
   Future<void> fetchCurrencies() async {
@@ -141,7 +122,7 @@ class _CurrenciesPageState extends State<CurrenciesPage> {
     });
   }
 
-  List<MapEntry<String, dynamic>> get filteredList {
+  List<MapEntry<String, dynamic>> filteredList(Set<String> starred) {
     if (currencies == null) return [];
     final list = currencies!.entries.where((e) {
       final code = e.key.toUpperCase();
@@ -167,62 +148,72 @@ class _CurrenciesPageState extends State<CurrenciesPage> {
   @override
   Widget build(BuildContext context) {
     final s = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(s.currencyListTitle),
-        centerTitle: true,
-      ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : error != null
-              ? Center(child: Text(s.errorNetwork, style: const TextStyle(color: Colors.red)))
-              : Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: TextField(
-                        decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.search),
-                          hintText: s.searchHint,
-                          border: const OutlineInputBorder(),
-                        ),
-                        onChanged: (v) => setState(() => search = v),
-                      ),
-                    ),
-                    Expanded(
-                      child: ListView.separated(
-                        itemCount: filteredList.length,
-                        separatorBuilder: (_, __) => const Divider(),
-                        itemBuilder: (context, idx) {
-                          final entry = filteredList[idx];
-                          final code = entry.key.toUpperCase();
-                          final name = entry.value;
-                          final isStar = starred.contains(code);
-                          final url = flagUrl(code);
-                          return ListTile(
-                            leading: url != null
-                                ? CircleAvatar(
-                                    backgroundImage: NetworkImage(url),
-                                    backgroundColor: Colors.grey[200],
-                                    onBackgroundImageError: (_, __) {},
-                                    child: Text(code),
-                                  )
-                                : CircleAvatar(child: Text(code)),
-                            title: Text('$code  $name'),
-                            trailing: IconButton(
-                              icon: Icon(
-                                isStar ? Icons.star : Icons.star_border,
-                                color: isStar ? Colors.amber : Colors.grey,
-                              ),
-                              onPressed: () => toggleStar(code),
-                              tooltip: isStar ? s.unstar : s.star,
+    return Consumer<FavoritesProvider>(
+      builder: (context, favProvider, _) {
+        final starred = favProvider.favorites.map((e) => e.toUpperCase()).toSet();
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(s.currencyListTitle),
+            centerTitle: true,
+          ),
+          body: isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : error != null
+                  ? Center(child: Text(s.errorNetwork, style: const TextStyle(color: Colors.red)))
+                  : Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: TextField(
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(Icons.search),
+                              hintText: s.searchHint,
+                              border: const OutlineInputBorder(),
                             ),
-                          );
-                        },
-                      ),
+                            onChanged: (v) => setState(() => search = v),
+                          ),
+                        ),
+                        Expanded(
+                          child: ListView.separated(
+                            itemCount: filteredList(starred).length,
+                            separatorBuilder: (_, __) => const Divider(),
+                            itemBuilder: (context, idx) {
+                              final entry = filteredList(starred)[idx];
+                              final code = entry.key.toUpperCase();
+                              final name = entry.value;
+                              final isStar = starred.contains(code);
+                              final url = flagUrl(code);
+                              return ListTile(
+                                onTap: () {
+                                  if (widget.isForSelection) {
+                                    Navigator.pop(context, code);
+                                  }
+                                },
+                                leading: url != null
+                                    ? CircleAvatar(
+                                        backgroundImage: NetworkImage(url),
+                                        backgroundColor: Colors.grey[200],
+                                        onBackgroundImageError: (_, __) {},
+                                        child: Text(code),
+                                      )
+                                    : CircleAvatar(child: Text(code)),
+                                title: Text('$code  $name'),
+                                trailing: IconButton(
+                                  icon: Icon(
+                                    isStar ? Icons.star : Icons.star_border,
+                                    color: isStar ? Colors.amber : Colors.grey,
+                                  ),
+                                  onPressed: () => favProvider.toggleFavorite(code),
+                                  tooltip: isStar ? s.unstar : s.star,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+        );
+      },
     );
   }
 }

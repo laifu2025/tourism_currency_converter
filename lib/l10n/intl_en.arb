@@ -9,6 +9,8 @@
   "unstar": "Unstar",
   "settingsTitle": "Settings",
   "appearance": "Appearance",
+  "defaultCurrency": "Default Currency",
+  "notSet": "Not Set",
   "appearanceSystem": "System",
   "appearanceLight": "Light",
   "appearanceDark": "Dark",

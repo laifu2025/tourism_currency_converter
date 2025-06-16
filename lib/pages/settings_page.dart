@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tourism_currency_converter/generated/app_localizations.dart';
+import 'package:tourism_currency_converter/l10n/app_localizations.dart';
+import 'package:tourism_currency_converter/pages/currencies_page.dart';
 import '../main.dart';
 import '../data/providers/theme_provider.dart';
+import '../data/providers/settings_provider.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -12,6 +14,8 @@ class SettingsPage extends StatelessWidget {
     final s = AppLocalizations.of(context)!;
     Locale currentLocale = Localizations.localeOf(context);
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final settingsProvider = context.watch<SettingsProvider>();
+
     ThemeMode currentMode = themeProvider.themeMode;
     String modeString;
     if (currentMode == ThemeMode.light) {
@@ -28,6 +32,21 @@ class SettingsPage extends StatelessWidget {
       ),
       body: ListView(
         children: [
+          ListTile(
+            leading: const Icon(Icons.money),
+            title: Text(s.defaultCurrency),
+            trailing: Text(settingsProvider.defaultCurrency ?? s.notSet),
+            onTap: () async {
+              final result = await Navigator.push<String>(
+                context,
+                MaterialPageRoute(builder: (context) => const CurrenciesPage(isForSelection: true)),
+              );
+              if (result != null && context.mounted) {
+                context.read<SettingsProvider>().setDefaultCurrency(result);
+              }
+            },
+          ),
+          const Divider(),
           ListTile(
             leading: const Icon(Icons.brightness_6),
             title: Text(s.appearance),

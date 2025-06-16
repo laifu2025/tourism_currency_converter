@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:tourism_currency_converter/generated/app_localizations.dart';
+import 'package:tourism_currency_converter/l10n/app_localizations.dart';
 import 'data/providers/theme_provider.dart';
+import 'data/providers/settings_provider.dart';
+import 'data/providers/favorites_provider.dart';
 import 'pages/home_page.dart';
 import 'pages/currencies_page.dart';
 import 'pages/settings_page.dart';
@@ -12,6 +14,8 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => SettingsProvider()..loadDefaultCurrency()),
+        ChangeNotifierProvider(create: (_) => FavoritesProvider()),
       ],
       child: const LocaleApp(),
     ),

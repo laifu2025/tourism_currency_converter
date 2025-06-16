@@ -36,16 +36,22 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsTitle => '设置';
 
   @override
-  String get appearance => '外观模式';
+  String get appearance => '外观';
+
+  @override
+  String get defaultCurrency => '默认货币';
+
+  @override
+  String get notSet => '未设置';
 
   @override
   String get appearanceSystem => '跟随系统';
 
   @override
-  String get appearanceLight => '浅色';
+  String get appearanceLight => '浅色模式';
 
   @override
-  String get appearanceDark => '深色';
+  String get appearanceDark => '深色模式';
 
   @override
   String get language => '语言';

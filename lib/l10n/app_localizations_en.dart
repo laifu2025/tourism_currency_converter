@@ -39,6 +39,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appearance => 'Appearance';
 
   @override
+  String get defaultCurrency => 'Default Currency';
+
+  @override
+  String get notSet => 'Not Set';
+
+  @override
   String get appearanceSystem => 'System';
 
   @override
