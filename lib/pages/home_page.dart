@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:tourism_currency_converter/l10n/app_localizations.dart';
+import 'package:tourism_currency_converter/core/constants/currency_country_map.dart' as currency_map;
 import 'package:tourism_currency_converter/data/providers/settings_provider.dart';
 import 'package:tourism_currency_converter/data/providers/favorites_provider.dart';
 import 'package:tourism_currency_converter/core/services/exchange_service.dart';
@@ -86,7 +88,29 @@ class _HomePageState extends State<HomePage> {
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
                     children: [
-                      CircleAvatar(child: Text(baseCurrency.toUpperCase())),
+                      InkWell(
+                        onTap: () async {
+                          final newCurrency = await Navigator.pushNamed(context, '/currencies', arguments: true);
+                          if (newCurrency != null && newCurrency is String) {
+                            setState(() {
+                              baseCurrency = newCurrency.toLowerCase();
+                            });
+                            fetchCurrencyNamesAndRates();
+                          }
+                        },
+                        child: currency_map.currencyToCountryCode[baseCurrency.toUpperCase()] != null
+                          ? SizedBox(
+                              width: 40,
+                              height: 30,
+                              child: SvgPicture.asset(
+                                'assets/flags/${currency_map.currencyToCountryCode[baseCurrency.toUpperCase()]!.toLowerCase()}.svg',
+                                fit: BoxFit.cover,
+                              ),
+                            )
+                          : CircleAvatar(
+                              child: Text(baseCurrency.toUpperCase()),
+                            ),
+                      ),
                       const SizedBox(width: 16),
                       Expanded(
                         child: TextField(
@@ -116,8 +140,20 @@ class _HomePageState extends State<HomePage> {
                       final code = targetCurrencies[idx];
                       final value = rates[code] != null ? (amount * rates[code]!).toStringAsFixed(2) : '--';
                       final name = currencyNames[code] ?? code.toUpperCase();
+                      final countryCode = currency_map.currencyToCountryCode[code.toUpperCase()];
                       return ListTile(
-                        leading: CircleAvatar(child: Text(code.toUpperCase())),
+                        leading: countryCode != null
+                            ? SizedBox(
+                                width: 40,
+                                height: 30,
+                                child: SvgPicture.asset(
+                                  'assets/flags/${countryCode.toLowerCase()}.svg',
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : CircleAvatar(
+                                child: Text(code.toUpperCase().substring(0, code.length > 2 ? 2: code.length)),
+                              ),
                         title: Text(name),
                         trailing: Text(value, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                       );

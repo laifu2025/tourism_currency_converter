@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:provider/provider.dart';
 import 'package:tourism_currency_converter/l10n/app_localizations.dart';
+import '../core/constants/currency_country_map.dart';
 import '../data/providers/favorites_provider.dart';
 
 class CurrenciesPage extends StatefulWidget {
@@ -18,83 +20,6 @@ class _CurrenciesPageState extends State<CurrenciesPage> {
   bool isLoading = true;
   String? error;
   String search = '';
-
-  // 常见货币代码与国旗代码映射
-  static const Map<String, String> currencyFlagMap = {
-    'USD': 'us',
-    'CNY': 'cn',
-    'EUR': 'eu',
-    'JPY': 'jp',
-    'GBP': 'gb',
-    'AUD': 'au',
-    'CAD': 'ca',
-    'CHF': 'ch',
-    'HKD': 'hk',
-    'KRW': 'kr',
-    'SGD': 'sg',
-    'NZD': 'nz',
-    'RUB': 'ru',
-    'INR': 'in',
-    'BRL': 'br',
-    'ZAR': 'za',
-    'TRY': 'tr',
-    'MXN': 'mx',
-    'SEK': 'se',
-    'NOK': 'no',
-    'DKK': 'dk',
-    'PLN': 'pl',
-    'THB': 'th',
-    'IDR': 'id',
-    'MYR': 'my',
-    'PHP': 'ph',
-    'VND': 'vn',
-    'TWD': 'tw',
-    'SAR': 'sa',
-    'AED': 'ae',
-    'ILS': 'il',
-    'EGP': 'eg',
-    'CZK': 'cz',
-    'HUF': 'hu',
-    'CLP': 'cl',
-    'COP': 'co',
-    'ARS': 'ar',
-    'PKR': 'pk',
-    'BDT': 'bd',
-    'KZT': 'kz',
-    'UAH': 'ua',
-    'NGN': 'ng',
-    'MAD': 'ma',
-    'QAR': 'qa',
-    'KWD': 'kw',
-    'OMR': 'om',
-    'JOD': 'jo',
-    'BHD': 'bh',
-    'LBP': 'lb',
-    'DZD': 'dz',
-    'TND': 'tn',
-    'IQD': 'iq',
-    'SDG': 'sd',
-    'LYD': 'ly',
-    'YER': 'ye',
-    'SYP': 'sy',
-    'MOP': 'mo',
-    'MNT': 'mn',
-    'LAK': 'la',
-    'KHR': 'kh',
-    'MMK': 'mm',
-    'BND': 'bn',
-    'BWP': 'bw',
-    'GHS': 'gh',
-    'KES': 'ke',
-    'TZS': 'tz',
-    'UGX': 'ug',
-    'XOF': 'sn', // 西非法郎用塞内加尔国旗
-    'XAF': 'cm', // 中非法郎用喀麦隆国旗
-    'XPF': 'pf', // 太平洋法郎用法属波利尼西亚
-    'BTC': 'eu', // 比特币无国旗，暂用欧盟
-    'ETH': 'eu', // 以太坊无国旗，暂用欧盟
-    // ...可继续补充
-  };
 
   @override
   void initState() {
@@ -139,12 +64,6 @@ class _CurrenciesPageState extends State<CurrenciesPage> {
     return list;
   }
 
-  String? flagUrl(String code) {
-    final flag = currencyFlagMap[code.toUpperCase()];
-    if (flag == null) return null;
-    return 'https://flagcdn.com/w40/$flag.png';
-  }
-
   @override
   Widget build(BuildContext context) {
     final s = AppLocalizations.of(context)!;
@@ -182,21 +101,26 @@ class _CurrenciesPageState extends State<CurrenciesPage> {
                               final code = entry.key.toUpperCase();
                               final name = entry.value;
                               final isStar = starred.contains(code);
-                              final url = flagUrl(code);
+                              final countryCode = currencyToCountryCode[code];
                               return ListTile(
                                 onTap: () {
                                   if (widget.isForSelection) {
                                     Navigator.pop(context, code);
                                   }
                                 },
-                                leading: url != null
-                                    ? CircleAvatar(
-                                        backgroundImage: NetworkImage(url),
-                                        backgroundColor: Colors.grey[200],
-                                        onBackgroundImageError: (_, __) {},
-                                        child: Text(code),
+                                leading: countryCode != null
+                                    ? SizedBox(
+                                        width: 40,
+                                        height: 30,
+                                        child: SvgPicture.asset(
+                                          'assets/flags/${countryCode.toLowerCase()}.svg',
+                                          fit: BoxFit.cover,
+                                        ),
                                       )
-                                    : CircleAvatar(child: Text(code)),
+                                    : CircleAvatar(
+                                        backgroundColor: Colors.grey[200],
+                                        child: Text(code.substring(0, code.length > 2 ? 2 : code.length)),
+                                      ),
                                 title: Text('$code  $name'),
                                 trailing: IconButton(
                                   icon: Icon(
