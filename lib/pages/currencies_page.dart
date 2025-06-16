@@ -78,12 +78,29 @@ class _CurrenciesPageState extends State<CurrenciesPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 24.0, top: 24.0, bottom: 16.0),
-                  child: Text(
-                    s.currencyListTitle,
-                    style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
-                  ),
+                Row(
+                  children: [
+                    if (widget.isForSelection)
+                      IconButton(
+                        icon: const Icon(CupertinoIcons.arrow_left_circle, color: Colors.white, size: 30),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          left: widget.isForSelection ? 0.0 : 24.0,
+                          top: 24.0,
+                          bottom: 16.0,
+                        ),
+                        child: Text(
+                          s.currencyListTitle,
+                          style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),

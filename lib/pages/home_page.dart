@@ -212,7 +212,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildCurrencyRow(s, isBaseCurrency: true),
+              _buildCurrencyRow(s, isBaseCurrency: true, onTap: () async {
+                final result = await Navigator.pushNamed(context, '/currencies', arguments: true);
+                if (result != null && result is String && mounted) {
+                  context.read<SettingsProvider>().setDefaultCurrency(result); // Set as default currency
+                }
+              }),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: Row(
@@ -229,7 +234,14 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   ],
                 ),
               ),
-              _buildCurrencyRow(s, isBaseCurrency: false),
+              _buildCurrencyRow(s, isBaseCurrency: false, onTap: () async {
+                final newCurrency = await Navigator.pushNamed(context, '/currencies', arguments: true);
+                if (newCurrency != null && newCurrency is String) {
+                  setState(() {
+                    targetCurrency = newCurrency.toLowerCase();
+                  });
+                }
+              }),
             ],
           ),
         ),
@@ -237,7 +249,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     );
   }
 
-  Widget _buildCurrencyRow(AppLocalizations s, {required bool isBaseCurrency}) {
+  Widget _buildCurrencyRow(AppLocalizations s, {required bool isBaseCurrency, required Function() onTap}) {
     final currencyCode = isBaseCurrency ? baseCurrency : targetCurrency;
     final countryC = currency_map.currencyToCountryCode[currencyCode.toUpperCase()];
     final currencyName = currencyNames[currencyCode] ?? currencyCode.toUpperCase();
@@ -246,18 +258,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         : (rates[targetCurrency] != null ? (amount * rates[targetCurrency]!) : 0);
 
     return InkWell(
-      onTap: () async {
-        final newCurrency = await Navigator.pushNamed(context, '/currencies', arguments: true);
-        if (newCurrency != null && newCurrency is String) {
-          if (isBaseCurrency) {
-            _handleCurrencyChange(newCurrency);
-          } else {
-            setState(() {
-              targetCurrency = newCurrency.toLowerCase();
-            });
-          }
-        }
-      },
+      onTap: onTap,
       child: Row(
         children: [
           ClipRRect(

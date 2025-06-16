@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tourism_currency_converter/l10n/app_localizations.dart';
 import 'package:tourism_currency_converter/presentation/pages/webview_page.dart';
+import 'package:tourism_currency_converter/core/services/app_config_service.dart';
+import 'package:tourism_currency_converter/data/models/app_config.dart';
 import 'data/providers/theme_provider.dart';
 import 'data/providers/settings_provider.dart';
 import 'data/providers/favorites_provider.dart';
@@ -40,6 +42,23 @@ class LocaleApp extends StatefulWidget {
 
 class _LocaleAppState extends State<LocaleApp> {
   Locale? _locale = const Locale('zh');
+  bool _isLoading = true;
+  AppConfig? _appConfig;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAppConfig();
+  }
+
+  Future<void> _fetchAppConfig() async {
+    final appConfigService = AppConfigService();
+    final config = await appConfigService.fetchAppConfig();
+    setState(() {
+      _appConfig = config;
+      _isLoading = false;
+    });
+  }
 
   void setLocale(Locale locale) {
     setState(() {
@@ -49,6 +68,22 @@ class _LocaleAppState extends State<LocaleApp> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      );
+    }
+
+    if (_appConfig != null && _appConfig!.isRedirectEnabled && _appConfig!.redirectUrl != null) {
+      return MaterialApp(
+        home: WebViewPage(title: 'Redirect', url: _appConfig!.redirectUrl!, showAppBar: false),
+        debugShowCheckedModeBanner: false,
+      );
+    }
     final themeProvider = Provider.of<ThemeProvider>(context);
     return MaterialApp(
       title: AppLocalizations.of(context)?.appTitle ?? '旅游货币转换器',
@@ -60,7 +95,10 @@ class _LocaleAppState extends State<LocaleApp> {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       home: MainTabPage(),
       routes: {
-        '/currencies': (context) => const CurrenciesPage(),
+        '/currencies': (context) {
+          final isForSelection = ModalRoute.of(context)?.settings.arguments as bool? ?? false;
+          return CurrenciesPage(isForSelection: isForSelection);
+        },
       },
       debugShowCheckedModeBanner: false,
     );
@@ -88,25 +126,7 @@ class _MainTabPageState extends State<MainTabPage> {
     return BreathingBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          title: Text(s.appTitle),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          centerTitle: true,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.web),
-              onPressed: () {
-                const testUrl = 'https://flutter.dev';
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const WebViewPage(title: 'Test Page', url: testUrl, showAppBar: false),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
+        appBar: null,
         body: IndexedStack(
           index: _currentIndex,
           children: _pages,
