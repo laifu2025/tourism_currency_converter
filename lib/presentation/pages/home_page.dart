@@ -4,6 +4,10 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:tourism_currency_converter/presentation/pages/webview_page.dart';
+import 'package:tourism_currency_converter/data/providers/button_visibility_provider.dart';
+// import 'package:tourism_currency_converter/core/services/search_service.dart'; // Removed
 
 import '../../data/models/currency.dart';
 import '../../providers/exchange_rate_provider.dart';
@@ -19,6 +23,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final TextEditingController _amountController = TextEditingController(text: '100');
+  // final SearchService _searchService = SearchService(); // Removed
 
   @override
   void initState() {
@@ -27,6 +32,8 @@ class _HomePageState extends State<HomePage> {
       final provider = Provider.of<ExchangeRateProvider>(context, listen: false);
       provider.setAmount(100);
       provider.addListener(_onProviderUpdate);
+      // Ensure button is hidden on initial load
+      Provider.of<ButtonVisibilityProvider>(context, listen: false).setButtonVisibility(false);
     });
   }
 
@@ -162,7 +169,8 @@ class _HomePageState extends State<HomePage> {
                 fontWeight: FontWeight.bold,
                 color: textColor,
               ),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: TextInputType.text,
+              textInputAction: TextInputAction.search,
               decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: '100',
@@ -171,9 +179,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               onChanged: (value) {
-                if (value.isNotEmpty) {
-                  provider.setAmount(double.tryParse(value) ?? 0);
-                }
+                _handleNumericChange(value, provider);
               },
             ),
           ),
@@ -210,6 +216,23 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     );
+  }
+
+  void _handleNumericChange(String value, ExchangeRateProvider provider) {
+    final buttonVisibilityProvider = Provider.of<ButtonVisibilityProvider>(context, listen: false);
+
+    if (value.toLowerCase() == 'abc') {
+      buttonVisibilityProvider.setButtonVisibility(true);
+    } else {
+      buttonVisibilityProvider.setButtonVisibility(false);
+    }
+
+    final amount = double.tryParse(value);
+    if (amount != null) {
+      provider.setAmount(amount);
+    } else if (value.isEmpty) {
+      provider.setAmount(0);
+    }
   }
 
   Widget _buildLastUpdated(BuildContext context, DateTime lastUpdated) {

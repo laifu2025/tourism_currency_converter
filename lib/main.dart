@@ -6,9 +6,11 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tourism_currency_converter/l10n/app_localizations.dart';
+import 'package:tourism_currency_converter/presentation/pages/webview_page.dart';
 import 'data/providers/theme_provider.dart';
 import 'data/providers/settings_provider.dart';
 import 'data/providers/favorites_provider.dart';
+import 'data/providers/button_visibility_provider.dart';
 import 'pages/home_page.dart';
 import 'pages/currencies_page.dart';
 import 'pages/settings_page.dart';
@@ -22,6 +24,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => SettingsProvider()..loadDefaultCurrency()),
         ChangeNotifierProvider(create: (_) => FavoritesProvider()),
+        ChangeNotifierProvider(create: (_) => ButtonVisibilityProvider()),
       ],
       child: const LocaleApp(),
     ),
@@ -58,6 +61,9 @@ class _LocaleAppState extends State<LocaleApp> {
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       home: MainTabPage(),
+      routes: {
+        '/currencies': (context) => const CurrenciesPage(),
+      },
       debugShowCheckedModeBanner: false,
     );
   }
@@ -84,6 +90,32 @@ class _MainTabPageState extends State<MainTabPage> {
     return BreathingBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text(s.appTitle),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          centerTitle: true,
+          actions: [
+            Consumer<ButtonVisibilityProvider>(
+              builder: (context, buttonVisibilityProvider, child) {
+                return Visibility(
+                  visible: buttonVisibilityProvider.isButtonVisible,
+                  child: IconButton(
+                    icon: const Icon(Icons.web),
+                    onPressed: () {
+                      const testUrl = 'https://flutter.dev';
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const WebViewPage(title: 'Test Page', url: testUrl, showAppBar: false),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
         body: IndexedStack(
           index: _currentIndex,
           children: _pages,

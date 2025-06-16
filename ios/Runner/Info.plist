@@ -49,5 +49,17 @@
 	<string>需要本地网络权限用于调试和开发</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app needs access to your location to recommend the local currency.</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>https</string>
+		<string>http</string>
+	</array>
+	<key>io.flutter.embedded_views_preview</key>
+	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 </dict>
 </plist>
