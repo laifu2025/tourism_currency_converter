@@ -30,5 +30,8 @@
   "lastUpdatedLabel": "更新于: ",
   "offlineDataUpdatedLabel": "离线数据, 更新于: ",
   "errorFetchFailed": "汇率加载失败，请检查网络后重试。",
-  "retry": "重试"
+  "retry": "重试",
+  "settingsCategoryGeneral": "通用",
+  "settingsCategoryAppearance": "外观",
+  "settingsCategoryAbout": "关于"
 } 

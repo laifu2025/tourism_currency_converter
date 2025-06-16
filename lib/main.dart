@@ -1,6 +1,10 @@
+import 'dart:ui';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tourism_currency_converter/l10n/app_localizations.dart';
 import 'data/providers/theme_provider.dart';
 import 'data/providers/settings_provider.dart';
@@ -8,6 +12,8 @@ import 'data/providers/favorites_provider.dart';
 import 'pages/home_page.dart';
 import 'pages/currencies_page.dart';
 import 'pages/settings_page.dart';
+import 'presentation/themes/app_theme.dart';
+import 'presentation/widgets/breathing_background.dart';
 
 void main() {
   runApp(
@@ -45,14 +51,8 @@ class _LocaleAppState extends State<LocaleApp> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return MaterialApp(
       title: AppLocalizations.of(context)?.appTitle ?? '旅游货币转换器',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.dark),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
       themeMode: themeProvider.themeMode,
       locale: _locale,
       supportedLocales: AppLocalizations.supportedLocales,
@@ -81,16 +81,44 @@ class _MainTabPageState extends State<MainTabPage> {
   @override
   Widget build(BuildContext context) {
     final s = AppLocalizations.of(context)!;
-    return Scaffold(
-      body: _pages[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (i) => setState(() => _currentIndex = i),
-        items: [
-          BottomNavigationBarItem(icon: const Icon(Icons.calculate), label: s.tabConverter),
-          BottomNavigationBarItem(icon: const Icon(Icons.list), label: s.tabCurrencies),
-          BottomNavigationBarItem(icon: const Icon(Icons.settings), label: s.tabSettings),
-        ],
+    return BreathingBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: IndexedStack(
+          index: _currentIndex,
+          children: _pages,
+        ),
+        bottomNavigationBar: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24.0),
+            topRight: Radius.circular(24.0),
+          ),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+            child: Container(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.black.withOpacity(0.5)
+                  : Colors.white.withOpacity(0.5),
+              child: BottomNavigationBar(
+                backgroundColor: Colors.transparent,
+                currentIndex: _currentIndex,
+                onTap: (i) => setState(() => _currentIndex = i),
+                elevation: 0,
+                items: [
+                  BottomNavigationBarItem(
+                      icon: const Icon(CupertinoIcons.arrow_2_circlepath),
+                      label: s.tabConverter),
+                  BottomNavigationBarItem(
+                      icon: const Icon(CupertinoIcons.list_bullet),
+                      label: s.tabCurrencies),
+                  BottomNavigationBarItem(
+                      icon: const Icon(CupertinoIcons.settings),
+                      label: s.tabSettings),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

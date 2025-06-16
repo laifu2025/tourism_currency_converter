@@ -1,7 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:tourism_currency_converter/core/services/location_service.dart';
 import 'package:tourism_currency_converter/l10n/app_localizations.dart';
 import 'package:tourism_currency_converter/core/constants/currency_country_map.dart' as currency_map;
 import 'package:tourism_currency_converter/data/providers/settings_provider.dart';
@@ -9,6 +11,8 @@ import 'package:tourism_currency_converter/data/providers/favorites_provider.dar
 import 'package:tourism_currency_converter/core/services/exchange_service.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:tourism_currency_converter/presentation/widgets/breathing_background.dart';
+import 'package:tourism_currency_converter/presentation/widgets/glassmorphic_card.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -17,33 +21,47 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   final TextEditingController _amountController = TextEditingController(text: '100');
   String baseCurrency = 'cny';
+  String targetCurrency = 'usd';
   Map<String, double> rates = {};
   double amount = 100;
   bool isLoading = true;
   String? errorMessage;
   DateTime? lastUpdated;
   bool isOffline = false;
-  bool _isDefaultCurrencySet = false;
   Map<String, String> currencyNames = {};
+  final LocationService _locationService = LocationService();
 
   @override
   void initState() {
     super.initState();
-    _fetchData();
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    await _fetchData();
+    await _maybeSetCurrencyByLocation();
+  }
+
+  Future<void> _maybeSetCurrencyByLocation() async {
+    final settingsProvider = context.read<SettingsProvider>();
+    // Only fetch location if no default currency is set
+    if (settingsProvider.defaultCurrency == null) {
+      final currencyCode = await _locationService.getCurrencyCodeFromLocation();
+      if (currencyCode != null && currencyCode.isNotEmpty && mounted) {
+        _handleCurrencyChange(currencyCode);
+      }
+    }
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (!_isDefaultCurrencySet) {
-      final defaultCurrency = context.watch<SettingsProvider>().defaultCurrency;
-      if (defaultCurrency != null) {
-        _handleCurrencyChange(defaultCurrency);
-      }
-      _isDefaultCurrencySet = true;
+    final defaultCurrency = context.watch<SettingsProvider>().defaultCurrency;
+    if (defaultCurrency != null && baseCurrency != defaultCurrency) {
+      _handleCurrencyChange(defaultCurrency);
     }
   }
 
@@ -113,30 +131,44 @@ class _HomePageState extends State<HomePage> {
     fetchRates();
   }
 
+  Future<void> _swapCurrencies() async {
+    setState(() {
+      final temp = baseCurrency;
+      baseCurrency = targetCurrency;
+      targetCurrency = temp;
+    });
+    // After swapping, we need to fetch new rates for the new base currency
+    await fetchRates(); 
+  }
+
   @override
   Widget build(BuildContext context) {
     final s = AppLocalizations.of(context)!;
     final favorites = context.watch<FavoritesProvider>().favorites.toList();
     final targetCurrencies = favorites.isNotEmpty ? favorites.map((e) => e.toLowerCase()).toList() : ['usd', 'eur', 'jpy', 'gbp'];
     
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(s.converterTitle),
-        centerTitle: true,
-      ),
-      body: Column(
-        children: [
-          _buildInputPanel(s),
-          _buildInfoPanel(),
-          const Divider(height: 1),
-          Expanded(
-            child: isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : errorMessage != null
-                    ? _buildErrorPanel(errorMessage!)
-                    : _buildRatesList(targetCurrencies, s),
+    return BreathingBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: Column(
+            children: [
+              _buildInputPanel(s),
+              _buildInfoPanel(),
+              const Divider(height: 1, color: Colors.white24),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24.0),
+                  child: isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : errorMessage != null
+                          ? _buildErrorPanel(errorMessage!)
+                          : _buildRatesList(targetCurrencies, s),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -152,20 +184,19 @@ class _HomePageState extends State<HomePage> {
     final label = isOffline ? s.offlineDataUpdatedLabel : s.lastUpdatedLabel;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           if (isOffline)
-            const Icon(Icons.cloud_off, size: 16, color: Colors.orange),
+            Icon(Icons.cloud_off, size: 14, color: Theme.of(context).colorScheme.secondary),
           if (isOffline)
             const SizedBox(width: 8),
           Text(
             '$label$formattedDate',
-            style: TextStyle(
-              color: isOffline ? Colors.orange : Colors.grey[600],
-              fontSize: 12,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: isOffline ? Colors.orangeAccent : Colors.white60,
+                ),
           ),
         ],
       ),
@@ -174,47 +205,108 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildInputPanel(AppLocalizations s) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(24.0),
+      child: GlassmorphicCard(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildCurrencyRow(s, isBaseCurrency: true),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Row(
+                  children: [
+                    const Expanded(child: Divider(color: Colors.white30)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: IconButton(
+                        icon: const Icon(CupertinoIcons.arrow_right_arrow_left, color: Colors.white70),
+                        onPressed: _swapCurrencies,
+                      ),
+                    ),
+                    const Expanded(child: Divider(color: Colors.white30)),
+                  ],
+                ),
+              ),
+              _buildCurrencyRow(s, isBaseCurrency: false),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCurrencyRow(AppLocalizations s, {required bool isBaseCurrency}) {
+    final currencyCode = isBaseCurrency ? baseCurrency : targetCurrency;
+    final countryC = currency_map.currencyToCountryCode[currencyCode.toUpperCase()];
+    final currencyName = currencyNames[currencyCode] ?? currencyCode.toUpperCase();
+    final amountToShow = isBaseCurrency
+        ? amount
+        : (rates[targetCurrency] != null ? (amount * rates[targetCurrency]!) : 0);
+
+    return InkWell(
+      onTap: () async {
+        final newCurrency = await Navigator.pushNamed(context, '/currencies', arguments: true);
+        if (newCurrency != null && newCurrency is String) {
+          if (isBaseCurrency) {
+            _handleCurrencyChange(newCurrency);
+          } else {
+            setState(() {
+              targetCurrency = newCurrency.toLowerCase();
+            });
+          }
+        }
+      },
       child: Row(
         children: [
-          InkWell(
-            onTap: () async {
-              final newCurrency = await Navigator.pushNamed(context, '/currencies', arguments: true);
-              if (newCurrency != null && newCurrency is String) {
-                _handleCurrencyChange(newCurrency);
-              }
-            },
-            child: currency_map.currencyToCountryCode[baseCurrency.toUpperCase()] != null
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
+            child: countryC != null
                 ? SizedBox(
-                    width: 40,
-                    height: 30,
+                    width: 50,
+                    height: 36,
                     child: SvgPicture.asset(
-                      'assets/flags/${currency_map.currencyToCountryCode[baseCurrency.toUpperCase()]!.toLowerCase()}.svg',
+                      'assets/flags/${countryC.toLowerCase()}.svg',
                       fit: BoxFit.cover,
                     ),
                   )
                 : CircleAvatar(
-                    child: Text(baseCurrency.toUpperCase()),
+                    radius: 25,
+                    backgroundColor: Colors.white12,
+                    child: Text(
+                      currencyCode.toUpperCase(),
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
                   ),
           ),
           const SizedBox(width: 16),
           Expanded(
-            child: TextField(
-              controller: _amountController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-              decoration: InputDecoration(
-                labelText: s.inputAmount,
-                border: const OutlineInputBorder(),
-              ),
-              onChanged: onAmountChanged,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(currencyCode.toUpperCase(), style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                Text(currencyName, style: const TextStyle(color: Colors.white70, fontSize: 14)),
+              ],
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            tooltip: '刷新汇率',
-            onPressed: fetchRates,
-          ),
+          isBaseCurrency
+              ? Expanded(
+                  child: IntrinsicWidth(
+                    child: TextField(
+                      controller: _amountController,
+                      textAlign: TextAlign.end,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
+                      decoration: const InputDecoration(border: InputBorder.none, hintText: '0', hintStyle: TextStyle(color: Colors.white30)),
+                      onChanged: onAmountChanged,
+                    ),
+                  ),
+                )
+              : Text(
+                  amountToShow.toStringAsFixed(2),
+                  style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
+                ),
         ],
       ),
     );
@@ -233,7 +325,7 @@ class _HomePageState extends State<HomePage> {
             Text(
               s.errorFetchFailed,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.red),
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Theme.of(context).colorScheme.error),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
@@ -247,41 +339,67 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildRatesList(List<String> targetCurrencies, AppLocalizations s) {
-    return ListView.builder(
-      itemCount: targetCurrencies.length,
-      itemBuilder: (context, idx) {
-        final code = targetCurrencies[idx];
-        final value = rates[code] != null ? (amount * rates[code]!).toStringAsFixed(2) : '--';
-        final name = currencyNames[code] ?? code.toUpperCase();
-        final countryCode = currency_map.currencyToCountryCode[code.toUpperCase()];
-        return ListTile(
-          leading: countryCode != null
-              ? SizedBox(
-                  width: 40,
-                  height: 30,
-                  child: SvgPicture.asset(
-                    'assets/flags/${countryCode.toLowerCase()}.svg',
-                    fit: BoxFit.cover,
-                  ),
-                )
-              : CircleAvatar(
-                  child: Text(code.toUpperCase().substring(0, code.length > 2 ? 2 : code.length)),
-                ),
-          title: Text(name),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(value, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-              const SizedBox(width: 8),
-              IconButton(
-                icon: const Icon(Icons.swap_horiz),
-                tooltip: 'Set as base currency',
-                onPressed: () => _handleCurrencyChange(code),
+    if (targetCurrencies.isEmpty) {
+      return Center(
+        child: Text(
+          "Add currencies to your favorites to see them here.",
+          style: TextStyle(color: Colors.white70),
+        ),
+      );
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12.0),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 24.0),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        child: ListView.separated(
+          padding: EdgeInsets.zero,
+          itemCount: targetCurrencies.length,
+          separatorBuilder: (context, index) => const Divider(),
+          itemBuilder: (context, idx) {
+            final code = targetCurrencies[idx];
+            final value = rates[code] != null ? (amount * rates[code]!).toStringAsFixed(2) : '--';
+            final name = currencyNames[code] ?? code.toUpperCase();
+            final countryCode = currency_map.currencyToCountryCode[code.toUpperCase()];
+            return ListTile(
+              leading: ClipRRect(
+                borderRadius: BorderRadius.circular(4.0),
+                child: countryCode != null
+                    ? SizedBox(
+                        width: 40,
+                        height: 30,
+                        child: SvgPicture.asset(
+                          'assets/flags/${countryCode.toLowerCase()}.svg',
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : CircleAvatar(
+                        radius: 20,
+                        backgroundColor: Colors.white12,
+                        child: Text(code.toUpperCase().substring(0, code.length > 2 ? 2 : code.length), style: const TextStyle(color: Colors.white70)),
+                      ),
               ),
-            ],
-          ),
-        );
-      },
+              title: Text(name, style: const TextStyle(color: Colors.white)),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(value, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    icon: const Icon(CupertinoIcons.arrow_right_arrow_left, size: 20, color: Colors.white60),
+                    tooltip: 'Set as base currency',
+                    onPressed: () => _handleCurrencyChange(code),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 }

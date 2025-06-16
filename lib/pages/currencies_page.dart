@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
@@ -71,73 +72,98 @@ class _CurrenciesPageState extends State<CurrenciesPage> {
       builder: (context, favProvider, _) {
         final starred = favProvider.favorites.map((e) => e.toUpperCase()).toSet();
         return Scaffold(
-          appBar: AppBar(
-            title: Text(s.currencyListTitle),
-            centerTitle: true,
+          backgroundColor: Colors.transparent,
+          body: SafeArea(
+            bottom: false,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 24.0, top: 24.0, bottom: 16.0),
+                  child: Text(
+                    s.currencyListTitle,
+                    style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                  child: CupertinoSearchTextField(
+                    backgroundColor: Colors.white.withOpacity(0.1),
+                    placeholder: s.searchHint,
+                    placeholderStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                    style: const TextStyle(color: Colors.white),
+                    onChanged: (v) => setState(() => search = v),
+                  ),
+                ),
+                Expanded(
+                  child: isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : error != null
+                          ? Center(child: Text(s.errorNetwork, style: const TextStyle(color: Colors.red)))
+                          : _buildCurrencyListView(filteredList(starred), favProvider),
+                ),
+              ],
+            ),
           ),
-          body: isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : error != null
-                  ? Center(child: Text(s.errorNetwork, style: const TextStyle(color: Colors.red)))
-                  : Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: TextField(
-                            decoration: InputDecoration(
-                              prefixIcon: const Icon(Icons.search),
-                              hintText: s.searchHint,
-                              border: const OutlineInputBorder(),
-                            ),
-                            onChanged: (v) => setState(() => search = v),
-                          ),
-                        ),
-                        Expanded(
-                          child: ListView.separated(
-                            itemCount: filteredList(starred).length,
-                            separatorBuilder: (_, __) => const Divider(),
-                            itemBuilder: (context, idx) {
-                              final entry = filteredList(starred)[idx];
-                              final code = entry.key.toUpperCase();
-                              final name = entry.value;
-                              final isStar = starred.contains(code);
-                              final countryCode = currencyToCountryCode[code];
-                              return ListTile(
-                                onTap: () {
-                                  if (widget.isForSelection) {
-                                    Navigator.pop(context, code);
-                                  }
-                                },
-                                leading: countryCode != null
-                                    ? SizedBox(
-                                        width: 40,
-                                        height: 30,
-                                        child: SvgPicture.asset(
-                                          'assets/flags/${countryCode.toLowerCase()}.svg',
-                                          fit: BoxFit.cover,
-                                        ),
-                                      )
-                                    : CircleAvatar(
-                                        backgroundColor: Colors.grey[200],
-                                        child: Text(code.substring(0, code.length > 2 ? 2 : code.length)),
-                                      ),
-                                title: Text('$code  $name'),
-                                trailing: IconButton(
-                                  icon: Icon(
-                                    isStar ? Icons.star : Icons.star_border,
-                                    color: isStar ? Colors.amber : Colors.grey,
-                                  ),
-                                  onPressed: () => favProvider.toggleFavorite(code),
-                                  tooltip: isStar ? s.unstar : s.star,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
         );
       },
+    );
+  }
+
+  Widget _buildCurrencyListView(List<MapEntry<String, dynamic>> list, FavoritesProvider favProvider) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12.0),
+        child: ListView.separated(
+          padding: EdgeInsets.zero,
+          itemCount: list.length,
+          separatorBuilder: (_, __) => const Divider(),
+          itemBuilder: (context, idx) {
+            final entry = list[idx];
+            final code = entry.key.toUpperCase();
+            final name = entry.value;
+            final isStar = favProvider.favorites.contains(code);
+            final countryCode = currencyToCountryCode[code];
+            return ListTile(
+              onTap: () {
+                if (widget.isForSelection) {
+                  Navigator.pop(context, code);
+                }
+              },
+              leading: countryCode != null
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(4.0),
+                      child: SizedBox(
+                        width: 40,
+                        height: 30,
+                        child: SvgPicture.asset(
+                          'assets/flags/${countryCode.toLowerCase()}.svg',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    )
+                  : CircleAvatar(
+                      backgroundColor: Colors.white12,
+                      child: Text(code.substring(0, code.length > 2 ? 2 : code.length), style: const TextStyle(color: Colors.white70)),
+                    ),
+              title: Text(code, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+              subtitle: Text(name, style: const TextStyle(color: Colors.white70)),
+              trailing: IconButton(
+                icon: Icon(
+                  isStar ? CupertinoIcons.star_fill : CupertinoIcons.star,
+                  color: isStar ? Colors.amber : Colors.white60,
+                ),
+                onPressed: () => favProvider.toggleFavorite(code),
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 }

@@ -30,5 +30,8 @@
   "lastUpdatedLabel": "Last updated: ",
   "offlineDataUpdatedLabel": "Offline data, updated: ",
   "errorFetchFailed": "Failed to load rates. Please check your network and try again.",
-  "retry": "Retry"
+  "retry": "Retry",
+  "settingsCategoryGeneral": "General",
+  "settingsCategoryAppearance": "Appearance",
+  "settingsCategoryAbout": "About"
 } 

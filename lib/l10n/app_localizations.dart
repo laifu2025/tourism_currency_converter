@@ -283,6 +283,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry'**
   String get retry;
+
+  /// No description provided for @settingsCategoryGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get settingsCategoryGeneral;
+
+  /// No description provided for @settingsCategoryAppearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get settingsCategoryAppearance;
+
+  /// No description provided for @settingsCategoryAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get settingsCategoryAbout;
 }
 
 class _AppLocalizationsDelegate
