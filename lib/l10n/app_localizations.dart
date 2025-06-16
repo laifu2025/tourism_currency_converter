@@ -104,47 +104,11 @@ abstract class AppLocalizations {
   /// **'Tourism Currency Converter'**
   String get appTitle;
 
-  /// No description provided for @tabConverter.
+  /// No description provided for @converterTitle.
   ///
   /// In en, this message translates to:
-  /// **'Converter'**
-  String get tabConverter;
-
-  /// No description provided for @tabCurrencies.
-  ///
-  /// In en, this message translates to:
-  /// **'Currencies'**
-  String get tabCurrencies;
-
-  /// No description provided for @tabSettings.
-  ///
-  /// In en, this message translates to:
-  /// **'Settings'**
-  String get tabSettings;
-
-  /// No description provided for @currencyListTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Currencies'**
-  String get currencyListTitle;
-
-  /// No description provided for @searchHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Search currency code or name'**
-  String get searchHint;
-
-  /// No description provided for @star.
-  ///
-  /// In en, this message translates to:
-  /// **'Star'**
-  String get star;
-
-  /// No description provided for @unstar.
-  ///
-  /// In en, this message translates to:
-  /// **'Unstar'**
-  String get unstar;
+  /// **'Currency Converter'**
+  String get converterTitle;
 
   /// No description provided for @settingsTitle.
   ///
@@ -152,11 +116,11 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get settingsTitle;
 
-  /// No description provided for @appearance.
+  /// No description provided for @inputAmount.
   ///
   /// In en, this message translates to:
-  /// **'Appearance'**
-  String get appearance;
+  /// **'Enter amount'**
+  String get inputAmount;
 
   /// No description provided for @defaultCurrency.
   ///
@@ -169,6 +133,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not Set'**
   String get notSet;
+
+  /// No description provided for @appearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get appearance;
 
   /// No description provided for @appearanceSystem.
   ///
@@ -194,18 +164,6 @@ abstract class AppLocalizations {
   /// **'Language'**
   String get language;
 
-  /// No description provided for @languageChinese.
-  ///
-  /// In en, this message translates to:
-  /// **'简体中文'**
-  String get languageChinese;
-
-  /// No description provided for @languageEnglish.
-  ///
-  /// In en, this message translates to:
-  /// **'English'**
-  String get languageEnglish;
-
   /// No description provided for @about.
   ///
   /// In en, this message translates to:
@@ -224,29 +182,95 @@ abstract class AppLocalizations {
   /// **'Version'**
   String get version;
 
-  /// No description provided for @converterTitle.
+  /// No description provided for @searchCurrency.
   ///
   /// In en, this message translates to:
-  /// **'Currency Converter'**
-  String get converterTitle;
+  /// **'Search Currency'**
+  String get searchCurrency;
 
-  /// No description provided for @inputAmount.
+  /// No description provided for @favorites.
   ///
   /// In en, this message translates to:
-  /// **'Input Amount'**
-  String get inputAmount;
+  /// **'Favorites'**
+  String get favorites;
+
+  /// No description provided for @allCurrencies.
+  ///
+  /// In en, this message translates to:
+  /// **'All Currencies'**
+  String get allCurrencies;
+
+  /// No description provided for @dataSourceInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'The exchange rate data in this application is provided by the following service. The data is for reference only, and the actual transaction exchange rate is subject to the bank counter.'**
+  String get dataSourceInfo;
+
+  /// No description provided for @dataUpdateInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange rate data is updated daily.'**
+  String get dataUpdateInfo;
+
+  /// No description provided for @tabConverter.
+  ///
+  /// In en, this message translates to:
+  /// **'Converter'**
+  String get tabConverter;
+
+  /// No description provided for @tabCurrencies.
+  ///
+  /// In en, this message translates to:
+  /// **'Currencies'**
+  String get tabCurrencies;
+
+  /// No description provided for @tabSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get tabSettings;
+
+  /// No description provided for @currencyListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Currencies'**
+  String get currencyListTitle;
 
   /// No description provided for @errorNetwork.
   ///
   /// In en, this message translates to:
-  /// **'Network Error'**
+  /// **'Network error, please try again later'**
   String get errorNetwork;
 
-  /// No description provided for @errorLoad.
+  /// No description provided for @searchHint.
   ///
   /// In en, this message translates to:
-  /// **'Load Failed'**
-  String get errorLoad;
+  /// **'Search currency name/code'**
+  String get searchHint;
+
+  /// No description provided for @unstar.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from favorites'**
+  String get unstar;
+
+  /// No description provided for @star.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to favorites'**
+  String get star;
+
+  /// No description provided for @lastUpdatedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Last updated: '**
+  String get lastUpdatedLabel;
+
+  /// No description provided for @offlineDataUpdatedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline data, updated: '**
+  String get offlineDataUpdatedLabel;
 }
 
 class _AppLocalizationsDelegate

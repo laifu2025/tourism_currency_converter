@@ -1,13 +1,44 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tourism_currency_converter/l10n/app_localizations.dart';
 import 'package:tourism_currency_converter/pages/currencies_page.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../main.dart';
 import '../data/providers/theme_provider.dart';
 import '../data/providers/settings_provider.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({Key? key}) : super(key: key);
+
+  void _showAbout(BuildContext context, AppLocalizations s) {
+    showAboutDialog(
+      context: context,
+      applicationName: s.appTitle,
+      applicationVersion: '1.0.0',
+      applicationIcon: const FlutterLogo(),
+      children: [
+        RichText(
+          text: TextSpan(
+            style: Theme.of(context).textTheme.bodyMedium,
+            children: [
+              TextSpan(text: '${s.dataSourceInfo}\n\n'),
+              TextSpan(
+                text: 'currency-api',
+                style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    launchUrl(Uri.parse('https://github.com/fawazahmed0/currency-api#readme'));
+                  },
+              ),
+              const TextSpan(text: '.\n\n'),
+              TextSpan(text: s.dataUpdateInfo),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,8 +120,10 @@ class SettingsPage extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.info_outline),
             title: Text(s.about),
-            trailing: Text(s.aboutView),
-            onTap: () {},
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              _showAbout(context, s);
+            },
           ),
           const SizedBox(height: 32),
           Center(child: Text('${s.version} 1.0.0\n© 2024 ${s.appTitle}', style: const TextStyle(color: Colors.grey, fontSize: 12))),
