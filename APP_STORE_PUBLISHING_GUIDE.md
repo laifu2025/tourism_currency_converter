@@ -51,6 +51,8 @@
 
 Apple 强制要求所有应用都提供隐私政策。你需要提供一个有效的 URL，指向你的应用隐私政策的网页。这份政策需要详细说明你的应用如何收集、使用和存储用户数据。
 
+**隐私政策 URL**: [https://laifu2025.github.io/tourism_currency_converter/PRIVACY_POLICY.md]
+
 ### 1.3 应用类别 (App Category)
 
 为你的应用选择最相关的两个类别（Primary Category 和 Secondary Category）。这有助于用户在 App Store 中发现你的应用。例如，对于货币转换应用，你可以选择"财务"作为主要类别，并选择其他相关类别。
