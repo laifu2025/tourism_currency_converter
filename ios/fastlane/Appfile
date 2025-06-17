@@ -1,0 +1,13 @@
+# This file contains the fastlane configuration
+# You can find more information about the configuration options available here:
+# https://docs.fastlane.tools/advanced/Appfile/
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/Appfile/
+
+app_identifier "com.example.tourismCurrencyConverter" # The bundle identifier of your app
+apple_id "your_apple_id@example.com" # Your Apple Developer account email
+
+# You can uncomment any of the lines below and add your own
+# team_id "XXXXXX"                 # Developer Portal Team ID
+# itc_team_id "XXXXXX"             # App Store Connect Team ID

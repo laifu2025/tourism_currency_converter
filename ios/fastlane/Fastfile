@@ -1,0 +1,75 @@
+# This file contains the fastlane configuration
+# You can find more information about the configuration options available here:
+# https://docs.fastlane.tools/getting-started/ios/setup/
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+platform :ios do
+  desc "Push a new release build to the App Store"
+  lane :release do
+    # --- App Store Connect API Key ---
+    # https://docs.fastlane.tools/app_store_connect_api/
+    # Replace with your actual values
+    app_store_connect_api_key(
+      key_id: "YOUR_KEY_ID",
+      issuer_id: "YOUR_ISSUER_ID",
+      key_filepath: "path/to/your/AuthKey_YOUR_KEY_ID.p8", # e.g., "~/Downloads/AuthKey_YOUR_KEY_ID.p8"
+      duration: 1200, # optional, in seconds
+      in_house: false # optional but may be required if using an enterprise account
+    )
+
+    # --- Git status check ---
+    ensure_git_status_clean
+    ensure_git_branch(branch: 'main')
+    git_pull
+
+    # --- Flutter build ---
+    # You can customize the build version here
+    # https://docs.fastlane.tools/actions/increment_version_number/
+    # For Flutter, it's often better to manage version in pubspec.yaml
+    # Consider using a tool like `flutter_automation_scripts` or a custom script
+    # to bump version in pubspec.yaml and then in Xcode project.
+    
+    # Let's assume you've bumped the version manually or with another script for now.
+
+    # Build the flutter app
+    sh("flutter", "build", "ios", "--release", "--no-codesigning")
+    
+    # --- fastlane actions ---
+    # build_app is a wrapper for gym
+    # https://docs.fastlane.tools/actions/build_app/
+    build_app(
+      workspace: "Runner.xcworkspace",
+      scheme: "Runner",
+      export_method: "app-store",
+      # If you have issues with code signing, you can specify your certificate and profile here
+      # export_options: {
+      #   method: "app-store",
+      #   signingStyle: "manual",
+      #   provisioningProfiles: {
+      #     "com.example.tourismCurrencyConverter" => "Your App Store Profile Name"
+      #   },
+      #   signingCertificate: "Apple Distribution: Your Name (XXXXXXXXXX)"
+      # }
+    )
+
+    # Upload to App Store Connect
+    # https://docs.fastlane.tools/actions/upload_to_app_store/
+    upload_to_app_store(
+      # If you want to skip submitting for review, you can set it to false
+      submit_for_review: true,
+      # If you want to automatically release after approval, set it to true
+      automatic_release: false
+    )
+
+    # You can also use 'deliver' for more advanced metadata management
+    # https://docs.fastlane.tools/actions/deliver/
+    # deliver(
+    #   ipa: (lane_context[SharedValues::IPA_OUTPUT_PATH]).to_s,
+    #   submit_for_review: true
+    # )
+  end
+end
