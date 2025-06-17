@@ -48,7 +48,9 @@
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>需要本地网络权限用于调试和开发</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs access to your location to recommend the local currency.</string>
+	<string>我们需要您的位置信息来为您推荐当地的默认货币，提升您的使用体验。</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>我们需要您的位置信息来为您推荐当地的默认货币，提升您的使用体验。</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>https</string>
