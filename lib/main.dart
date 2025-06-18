@@ -86,7 +86,7 @@ class _LocaleAppState extends State<LocaleApp> {
     }
     final themeProvider = Provider.of<ThemeProvider>(context);
     return MaterialApp(
-      title: AppLocalizations.of(context)?.appTitle ?? '旅游货币转换器',
+      title: 'TouristConverter',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeProvider.themeMode,
