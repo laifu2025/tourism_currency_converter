@@ -1,4 +1,7 @@
-import 'package:tourism_currency_converter/data/models/app_config.dart';
+import 'package:taptap_exchange/data/models/app_config.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart' show kDebugMode;
 
 class AppConfigService {
   Future<AppConfig> fetchAppConfig() async {

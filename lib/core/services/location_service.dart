@@ -1,6 +1,6 @@
 import 'package:geolocator/geolocator.dart';
+import 'package:taptap_exchange/core/constants/country_currency_map.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:tourism_currency_converter/core/constants/country_currency_map.dart';
 
 class LocationService {
   Future<String?> getCurrencyCodeFromLocation() async {

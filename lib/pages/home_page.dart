@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:tourism_currency_converter/core/services/location_service.dart';
-import 'package:tourism_currency_converter/l10n/app_localizations.dart';
-import 'package:tourism_currency_converter/core/constants/currency_country_map.dart' as currency_map;
-import 'package:tourism_currency_converter/data/providers/settings_provider.dart';
-import 'package:tourism_currency_converter/data/providers/favorites_provider.dart';
-import 'package:tourism_currency_converter/core/services/exchange_service.dart';
+import 'package:taptap_exchange/core/services/location_service.dart';
+import 'package:taptap_exchange/l10n/app_localizations.dart';
+import 'package:taptap_exchange/core/constants/currency_country_map.dart' as currency_map;
+import 'package:taptap_exchange/data/providers/settings_provider.dart';
+import 'package:taptap_exchange/data/providers/favorites_provider.dart';
+import 'package:taptap_exchange/core/services/exchange_service.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:tourism_currency_converter/presentation/widgets/breathing_background.dart';
-import 'package:tourism_currency_converter/presentation/widgets/glassmorphic_card.dart';
+import 'package:taptap_exchange/presentation/widgets/breathing_background.dart';
+import 'package:taptap_exchange/presentation/widgets/glassmorphic_card.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);

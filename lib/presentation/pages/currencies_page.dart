@@ -4,9 +4,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:provider/provider.dart';
-import 'package:tourism_currency_converter/l10n/app_localizations.dart';
+import 'package:taptap_exchange/l10n/app_localizations.dart';
 import '../../core/constants/currency_country_map.dart';
 import '../../data/providers/favorites_provider.dart';
+import 'package:collection/collection.dart';
 
 class CurrenciesPage extends StatefulWidget {
   final bool isForSelection;

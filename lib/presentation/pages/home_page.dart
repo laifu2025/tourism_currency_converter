@@ -3,10 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:taptap_exchange/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:tourism_currency_converter/presentation/pages/webview_page.dart';
-// import 'package:tourism_currency_converter/core/services/search_service.dart'; // Removed
+import 'package:taptap_exchange/presentation/pages/webview_page.dart';
+// import 'package:taptap_exchange/core/services/search_service.dart'; // Removed
+import 'package:taptap_exchange/core/services/location_service.dart';
+import 'package:taptap_exchange/core/constants/currency_country_map.dart' as currency_map;
+import 'package:taptap_exchange/presentation/widgets/breathing_background.dart';
+import 'package:taptap_exchange/presentation/widgets/glassmorphic_card.dart';
 
 import '../../data/models/currency.dart';
 import '../../providers/exchange_rate_provider.dart';

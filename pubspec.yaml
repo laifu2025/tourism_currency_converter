@@ -1,5 +1,5 @@
 name: taptap_exchange
-description: "TapTap Exchange: A simple and fast currency converter for travelers."
+description: "Tourism Currency Converter: A simple and fast currency converter for travelers."
 publish_to: 'none'
 version: 1.0.2+2
 environment:
@@ -37,3 +37,4 @@ flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
   image_path: "assets/icon/app_icon.png"
+  remove_alpha_ios: true
