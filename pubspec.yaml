@@ -1,5 +1,5 @@
-name: tourism_currency_converter
-description: "A new Flutter project."
+name: taptap_exchange
+description: "TapTap Exchange: A simple and fast currency converter for travelers."
 publish_to: 'none'
 version: 1.0.2+2
 environment:
