@@ -5,7 +5,7 @@
 ## 可本地化的信息
 
 ### App 名称
-TravelPay
+Tourism Currency Converter
 
 ### 副标题
 轻松旅行，实时汇率换算

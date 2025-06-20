@@ -1,21 +1,21 @@
 # App Store 文案
 
-本文档提供了 "TravelPay" 应用在 App Store Connect 提交时所需的文案。请直接复制粘贴到对应的输入框中。
+本文档提供了 "Tourism Currency Converter" 应用在 App Store Connect 提交时所需的文案。请直接复制粘贴到对应的输入框中。
 
 ---
 
 ### App 名称
-TravelPay
+Tourism Currency Converter
 
 ---
 
 ### 推广文本 (Promotional Text)
-TravelPay: 您的终极旅行伴侣。实时获取全球150多种货币的汇率，支持离线使用和个性化收藏。让货币兑换从未如此简单！
+Tourism Currency Converter: 您的终极旅行伴侣。实时获取全球150多种货币的汇率，支持离线使用和个性化收藏。让货币兑换从未如此简单！
 
 ---
 
 ### 描述 (Description)
-欢迎使用 TravelPay，专为全球旅行者打造的终极货币转换工具！无论您是计划下一次冒险，还是正在国外旅行，TravelPay 都能为您提供无缝、准确的汇率转换体验。
+欢迎使用 Tourism Currency Converter，专为全球旅行者打造的终极货币转换工具！无论您是计划下一次冒险，还是正在国外旅行，Tourism Currency Converter 都能为您提供无缝、准确的汇率转换体验。
 
 **主要功能:**
 
@@ -27,7 +27,7 @@ TravelPay: 您的终极旅行伴侣。实时获取全球150多种货币的汇率
 *   **多语言支持**: 目前支持简体中文和英文，并会不断增加更多语言。
 *   **精美主题**: 提供浅色和深色两种主题模式，并可根据您的系统设置自动切换，保护您的眼睛。
 
-TravelPay 是您出国旅游、海外购物、商务出差的理想伴侣。立即下载，体验前所未有的轻松便捷的货币换算！
+Tourism Currency Converter 是您出国旅游、海外购物、商务出差的理想伴侣。立即下载，体验前所未有的轻松便捷的货币换算！
 
 ---
 
