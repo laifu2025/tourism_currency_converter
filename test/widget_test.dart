@@ -8,23 +8,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:taptap_exchange/main.dart';
+import 'package:provider/provider.dart';
+import 'package:tourism_currency_converter/main.dart';
+import 'package:tourism_currency_converter/data/providers/theme_provider.dart';
+import 'package:tourism_currency_converter/data/providers/settings_provider.dart';
+import 'package:tourism_currency_converter/data/providers/favorites_provider.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('App starts and displays main tabs', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => ThemeProvider()),
+          ChangeNotifierProvider(create: (_) => SettingsProvider()),
+          ChangeNotifierProvider(create: (_) => FavoritesProvider()),
+        ],
+        child: const LocaleApp(),
+      ),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Wait for app to load
+    await tester.pumpAndSettle();
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verify that bottom navigation bar is present
+    expect(find.byType(BottomNavigationBar), findsOneWidget);
   });
 }

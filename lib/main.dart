@@ -2,22 +2,19 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:taptap_exchange/l10n/app_localizations.dart';
-import 'package:taptap_exchange/presentation/pages/webview_page.dart';
-import 'package:taptap_exchange/core/services/app_config_service.dart';
-import 'package:taptap_exchange/data/models/app_config.dart';
-import 'package:taptap_exchange/data/providers/currency_provider.dart';
-import 'package:taptap_exchange/data/providers/favorites_provider.dart';
-import 'package:taptap_exchange/data/providers/settings_provider.dart';
-import 'package:taptap_exchange/data/providers/theme_provider.dart';
-import 'package:taptap_exchange/pages/home_page.dart';
-import 'package:taptap_exchange/pages/settings_page.dart';
-import 'package:taptap_exchange/pages/currencies_page.dart';
-import 'package:taptap_exchange/presentation/themes/app_theme.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:tourism_currency_converter/l10n/app_localizations.dart';
+import 'package:tourism_currency_converter/presentation/pages/webview_page.dart';
+import 'package:tourism_currency_converter/core/services/app_config_service.dart';
+import 'package:tourism_currency_converter/data/models/app_config.dart';
+import 'package:tourism_currency_converter/data/providers/favorites_provider.dart';
+import 'package:tourism_currency_converter/data/providers/settings_provider.dart';
+import 'package:tourism_currency_converter/data/providers/theme_provider.dart';
+import 'package:tourism_currency_converter/pages/home_page.dart';
+import 'package:tourism_currency_converter/pages/settings_page.dart';
+import 'package:tourism_currency_converter/pages/currencies_page.dart';
+import 'package:tourism_currency_converter/presentation/themes/app_theme.dart';
 import 'presentation/widgets/breathing_background.dart';
 
 void main() {
@@ -95,7 +92,7 @@ class _LocaleAppState extends State<LocaleApp> {
       locale: _locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
-      home: MainTabPage(),
+      home: const MainTabPage(),
       routes: {
         '/currencies': (context) {
           final isForSelection = ModalRoute.of(context)?.settings.arguments as bool? ?? false;
