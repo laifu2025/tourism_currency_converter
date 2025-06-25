@@ -143,16 +143,26 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    final s = AppLocalizations.of(context)!;
+    final s = AppLocalizations.of(context);
+    if (s == null) {
+      return const Center(child: Text('Loading localization...'));
+    }
+    
     final favorites = context.watch<FavoritesProvider>().favorites.toList();
     final targetCurrencies = favorites.isNotEmpty ? favorites.map((e) => e.toLowerCase()).toList() : ['usd', 'eur', 'jpy', 'gbp'];
-    
-    return BreathingBackground(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: SafeArea(
-          child: Column(
-            children: [
+          
+      return BreathingBackground(
+      child: GestureDetector(
+        onTap: () {
+          // 点击空白处收缩键盘
+          FocusScope.of(context).unfocus();
+        },
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          resizeToAvoidBottomInset: true, // 确保键盘不遮挡输入框
+          body: SafeArea(
+            child: Column(
+              children: [
               _buildInputPanel(s),
               _buildInfoPanel(),
               const Divider(height: 1, color: Colors.white24),
@@ -167,6 +177,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 ),
               ),
             ],
+            ),
           ),
         ),
       ),
@@ -176,7 +187,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   Widget _buildInfoPanel() {
     if (isLoading) return const SizedBox.shrink();
 
-    final s = AppLocalizations.of(context)!;
+    final s = AppLocalizations.of(context);
+    if (s == null) return const SizedBox.shrink();
+    
     String formattedDate = lastUpdated != null
         ? DateFormat('yyyy-MM-dd HH:mm').format(lastUpdated!)
         : 'N/A';
@@ -298,9 +311,18 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                       controller: _amountController,
                       textAlign: TextAlign.end,
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      textInputAction: TextInputAction.done, // 添加完成按钮
                       style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
                       decoration: const InputDecoration(border: InputBorder.none, hintText: '0', hintStyle: TextStyle(color: Colors.white30)),
                       onChanged: onAmountChanged,
+                      onSubmitted: (value) {
+                        // 提交时收缩键盘
+                        FocusScope.of(context).unfocus();
+                      },
+                      onTapOutside: (event) {
+                        // 点击TextField外部时收缩键盘
+                        FocusScope.of(context).unfocus();
+                      },
                     ),
                   ),
                 )
@@ -314,7 +336,11 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   Widget _buildErrorPanel(String error) {
-    final s = AppLocalizations.of(context)!;
+    final s = AppLocalizations.of(context);
+    if (s == null) {
+      return const Center(child: Text('Error loading localization'));
+    }
+    
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
