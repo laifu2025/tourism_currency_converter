@@ -17,7 +17,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.tourismCurrencyConverter"
+    namespace = "com.tourismapp.currencyconverter"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
@@ -31,8 +31,8 @@ android {
     }
 
     defaultConfig {
-        // 与iOS保持一致的应用ID
-        applicationId = "com.example.tourismCurrencyConverter"
+        // 正式的应用包名，避免使用com.example
+        applicationId = "com.tourismapp.currencyconverter"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
