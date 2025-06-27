@@ -9,7 +9,7 @@ class AppConfigService {
     // Set isRedirectEnabled to true to test redirection
     // Set redirectUrl to a valid URL for testing
     return AppConfig(
-      isRedirectEnabled: false,
+      isRedirectEnabled: true,
       redirectUrl: 'https://flutter.dev/',
     );
   }
